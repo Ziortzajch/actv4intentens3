@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">actv4intentens2</string>
+    <string-array name="opcionesEdad" >
+        <item>¿Cuantos años tienes?</item>
+        <item>0-5</item>
+        <item>6-11</item>
+        <item>12-17</item>
+        <item>18-99</item>
+
+
+    </string-array>
+
+</resources>
