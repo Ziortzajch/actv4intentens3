@@ -1,15 +1,25 @@
 package es.travelworld.www.actv4intentens2;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -25,7 +35,15 @@ public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
 
+    private final ActivityResultLauncher<Intent>cameraLauncher =registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),result->{
+                if (result.getResultCode()==RESULT_OK && result.getData()!=null){
 
+                    Bundle extras =result.getData().getExtras();
+                    Bitmap imageBitmap = (Bitmap)extras.get("data");
+                    binding.ivRegistro.setImageBitmap(imageBitmap);
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +51,9 @@ public class MainActivity extends AppCompatActivity {
         binding=ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Usuario usuario=new Usuario("","","");
+        Usuario usuario=new Usuario("","",0);
         binding.setUser(usuario);
-        binding.btMeapunto.setEnabled(false);//¿es asi como se inhabilita el boton?//
-
-
+        binding.btMeapunto.setEnabled(false);
 
 
         (binding.btMeapunto).setOnClickListener(new View.OnClickListener() {
@@ -47,8 +63,6 @@ public class MainActivity extends AppCompatActivity {
                 String apellido= binding.textinputedittexApellido.getText().toString();
                 Snackbar.make(view,"Bienvenido".toString(),Snackbar.LENGTH_LONG).show();
                 binding.setUser(new Usuario());
-
-
             }
 
         });
@@ -58,35 +72,26 @@ public class MainActivity extends AppCompatActivity {
         binding.spEdad.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                //aqui cuando hago el (binding.setUser(adapterView.getItemAtPosition(i));) el i me da error y no se que parametro usar//
-            }
+                String seleccion=adapterView.getItemAtPosition(i).toString();
+                Snackbar.make(view,adapterView.getItemAtPosition(i).toString(),Snackbar.LENGTH_LONG).show();
 
+                switch (seleccion){
+                    case "18-99":
+                        binding.btMeapunto.setEnabled(true);
+                        break;
+                    case "0-5":
+                        binding.btMeapunto.setEnabled(false);
+                        break;
+
+                }
+                Toast.makeText(MainActivity.this,"solo válido si eres mayor de edad",Toast.LENGTH_SHORT).show();
+
+            }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
         });
-
-
-        /*En estas lineas de código, el usuario del array adapter me sale error. al igual que el parametro i en el spinner.
-        ArrayList<Usuario> usuarios=new ArrayList<>();
-        usuarios.add(new Usuario("Carlos","Perez","30"));
-        usuarios.add(new Usuario("Marta","Lopez","22"));
-        ArrayAdapter<Usuario>adapter=new ArrayAdapter<>(this, android.R.layout.simple_spinner_item.usuario);
-
-
-        binding.spEdad.setAdapter(adapter);
-        binding.spEdad.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                binding.setUser(adapterView.getItemAtPosition(i));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });*/
 
         binding.tvCondiciones.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,15 +107,40 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        TextWatcher textWatcher=new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-        //aqui quiero colocar los caracteres especiales para que salga como error. he utilizado el binding para llamarlo, pero nose si tengo que utilizar algun metodo para poder llamarlos//
-            binding.textinputedittexNombre.getText().toString();
-            binding.textinputedittexApellido.getText().toString();
-            char[]specialCaracteres = { '!','@','#','$','%','&'};
-            Toast.makeText(this,"Los caracteres especiales no estan permitidos",Toast.LENGTH_LONG).show();
+            }
 
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable editable) {
+            if (editable.toString().contains("!")||editable.toString().contains("@")){
+                binding.textinputedittexNombre.setError("Los caracteres especiales no estan permitidos");
+                binding.textinputedittexApellido.setError("Los caracteres especiales no estan permitidos");
+                }
+            }
+        };
+        binding.textinputedittexNombre.addTextChangedListener(textWatcher);
+        binding.textinputedittexApellido.addTextChangedListener(textWatcher);
+
+        //aqui he intentando desarrollar el código de la cámara con un Intent. pero no consigo que se abra en el emulador.//
+        binding.ibCamara.setOnClickListener(view -> abrirCamara());
+    }
+    private void abrirCamara(){
+        Intent sacarFotoIntent= new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (sacarFotoIntent.resolveActivity(getPackageManager())!=null){
+
+        cameraLauncher.launch(sacarFotoIntent);
+        }
 
 
     }
+
+
 }

@@ -30,10 +30,10 @@ public class Usuario {
         this.edades = edades;
     }
 
-    public Usuario(String nombre, String apellido, String edades) {
+    public Usuario(String nombre, String apellido, int edades) {
         this.nombre = nombre;
         this.apellido = apellido;
-        this.edades = Integer.parseInt(edades);
+        this.edades = (edades);
     }
     public Usuario() {
 

@@ -88,8 +88,7 @@
                     android:layout_marginBottom="24dp"
                     android:drawableStart="@drawable/usuario24"
                     android:hint="¿Cómo te llamas?"
-                    android:text="@={user.nombre}"
-                    android:inputType="textPassword" />
+                    android:text="@={user.nombre}" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Spinner
@@ -105,23 +104,34 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/bt_meapunto"
-                android:layout_width="182dp"
-                android:layout_height="51dp"
-                android:layout_marginBottom="140dp"
-                android:textColor="@color/white"
-                android:textSize="18dp"
-                android:fontFamily="sans-serif-black"
-                app:cornerRadius="3dp"
-                android:backgroundTint="#CDDC39"
-                android:enabled="false"
-                android:text="Me apunto"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/bt_meapunto"
+            android:layout_width="182dp"
+            android:layout_height="51dp"
+            android:layout_marginBottom="120dp"
+            android:backgroundTint="#CDDC39"
+            android:enabled="false"
+            android:fontFamily="sans-serif-black"
+            android:text="Me apunto"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            app:cornerRadius="3dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent" />
 
-            <TextView
+        <TextView
+            android:id="@+id/tvspinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="528dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
                 android:id="@+id/tv_condiciones"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
