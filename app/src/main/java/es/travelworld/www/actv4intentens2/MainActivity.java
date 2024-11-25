@@ -1,6 +1,7 @@
 package es.travelworld.www.actv4intentens2;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -8,10 +9,12 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +24,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -54,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         Usuario usuario=new Usuario("","",0);
         binding.setUser(usuario);
         binding.btMeapunto.setEnabled(false);
+        binding.ibCamara.setEnabled(true);
+
 
 
         (binding.btMeapunto).setOnClickListener(new View.OnClickListener() {
@@ -107,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         TextWatcher textWatcher=new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -129,8 +137,15 @@ public class MainActivity extends AppCompatActivity {
         binding.textinputedittexNombre.addTextChangedListener(textWatcher);
         binding.textinputedittexApellido.addTextChangedListener(textWatcher);
 
-        //aqui he intentando desarrollar el código de la cámara con un Intent. pero no consigo que se abra en el emulador.//
+        //aqui he intentando desarrollar el código de la cámara con un Intent. el activityResultLauncherCamara no me lo reconoce//
         binding.ibCamara.setOnClickListener(view -> abrirCamara());
+        activityResultLauncherCamara=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),result ->{
+            if (result.getResultCode()==RESULT_OK){
+                Intent data =result.getData();
+                Bitmap imageBimap =(Bitmap) data.getExtras().get("data");
+                imageButton.setImageBitmap(imageBimap); //como puedo referenciar el imagebutton para que lo reconozca?//
+            }
+        });
     }
     private void abrirCamara(){
         Intent sacarFotoIntent= new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -139,8 +154,18 @@ public class MainActivity extends AppCompatActivity {
         cameraLauncher.launch(sacarFotoIntent);
         }
 
-
     }
+    private void dispatchTakePictureIntent(){
+        if(ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){//el concepto CAMERA no reconoce//
+            Log.d("depurando","No tengo permiso para la camara");
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA},
+                    REQUEST_CAMERA_PERMISSION);
+        }else{
 
+            Log.d("depurando","Tengo permiso para la cámara");
+            Intent intent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            activityResultLaunvherCamara.launch(intent);
+        }
+    }
 
 }
